@@ -18,43 +18,18 @@ class Render(QWebPage):                                #Render class renders the
     self.app.quit()
 
 def extract_video_links(playlist_url):                 #simple scraper to extract video links from the youtube page
-    u=urllib2.urlopen(playlist_url)
+    u=urllib2.urlopen(playlist_url)                    #and convert the url from www.youtube.com to www.ssyoutube.com
     data=u.read()
     soup=BeautifulSoup(data,"html.parser")
 
     anchors=soup.find_all('a','pl-video-title-link yt-uix-tile-link yt-uix-sessionlink  spf-link ')
 
-    lst=[]
-
-    for a in anchors:
-        lst.append("https://www.youtube.com"+str(a['href']))
-
     down_links=[]
 
-    for link in lst:
-        splits=link.split('www.')
-        new_link=splits[0]+"www.ss"+splits[1]
-        down_links.append(new_link)
-
+    for a in anchors:
+        down_links.append("https://www.ssyoutube.com"+str(a['href']))
+        
     return down_links
-
-'''
-def rendered_html(url):                                #selenium implementation. not rendering for some some reason
-    conn=urllib2.urlopen(url)
-    data=conn.read()
-    conn.close()
-
-    f_name="D:\Learn\Code\PY\Projects\YT Playlist\html.txt"
-    f=open(f_name,'wt')
-    f.write(data)
-    f.close()
-
-    browser=webdriver.Firefox()
-    browser.get('file:///'+f_name)
-    rendered_html=browser.page_source.encode("utf-8")
-    browser.quit()
-    return rendered_html
-'''
 
 def rendered_html(url):
     r = Render(url)
@@ -73,7 +48,7 @@ vid_links=extract_video_links(playlist_url)
 
 download_urls=[]
 
-for vid_link in vid_links[:1]:                           #some error occuring when run for the entire vid_links list
+for vid_link in vid_links[:1]:                           #some error occuring when running for the entire vid_links list
     r_html=rendered_html(vid_link)                       #runs correctly for one vid_link
     download_urls.append(get_video_download_url(r_html)) #yet to be corrected
     print "got one"
